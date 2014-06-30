@@ -236,7 +236,19 @@ $(document).ready(function() {
 		}
 	});
 
-	client.$outputWindowWrapper.on("mousewheel", function(e) {
+	client.$outputWindowWrapper.on("mousewheel DOMMouseScroll", function(e) {
+
+		var delta = 0;
+		
+		if (e.type == 'mousewheel') {
+			delta = (e.originalEvent.wheelDelta * -1);
+		}
+		else if (e.type == 'DOMMouseScroll') {
+			delta = 40 * e.originalEvent.detail;
+		}
+
+		if(delta < 0)
+			return;
 
 		if(client.$outputWindowMargin.prop("scrollTop") + client.$outputWindowMargin.prop("offsetHeight") + 10 >= client.$outputWindowMargin.prop("scrollHeight")) {
 			client.$outputWindowWrapper.removeClass("split");
@@ -244,7 +256,7 @@ $(document).ready(function() {
 	});
 
 	client.$outputWindowMargin.on("scroll", function(e) {
-
+		
 		var $this = $(this);
 		var scrollDifference = Math.abs(this.scrollTop - (this.scrollHeight - this.offsetHeight));
 		
@@ -334,7 +346,7 @@ $(document).ready(function() {
 			socket = new WebSocket("ws://kinslayermud.org:4001", protocol);
 		}
 		else {
-			socket = new WebSocket("ws://kinslayermud.org:5001", protocol);
+			socket = new WebSocket("ws://kinslayermud.org:4001", protocol);
 		}
 
 		socket.onopen = function()
