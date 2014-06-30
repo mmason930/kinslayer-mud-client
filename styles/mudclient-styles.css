@@ -1,0 +1,561 @@
+.clearLeft {
+	clear: left;
+}
+
+.clearRight {
+
+	clear: right;
+}
+
+.clearBoth {
+
+	clear: both;
+}
+
+#rightPanelWrapper {
+
+	overflow: hidden;
+	float:left;
+	margin-top: 4%;
+}
+
+#rightPanel {
+
+	padding-left: 5px;
+	color: #FFF;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#mainContentWrapper {
+	width: 85%;
+	height: 100%;
+	float: left;
+}
+
+#mainContentInner {
+	background: #AAA;
+	background-color: #000000;
+	height: 90%;
+}
+
+#outputWindowWrapper {
+	border: 1px solid #FFF;
+	overflow:hidden;
+	height: 97%;
+}
+
+#featuredMud
+{
+	color: #FFF;
+	display: block;
+	height: 100%;
+	float: right;
+}
+
+#featuredMud a
+{
+	display: none;
+}
+
+#featuredMud img
+{
+	display: block;
+	height: 70px;
+	position: relative;
+	top: 0px;
+	border: none;
+}
+
+#topNav
+{
+	background: none;
+	height: 70px;
+	width: 100%;
+}
+
+#topNav ul
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background: none;
+	position: relative;
+	top: 38px;
+}
+
+#topNav ul li a
+{
+	float: left;
+	width: 95px;
+	text-align: center;
+	padding: 5px 10px 5px 10px;
+	background-color: #393939;
+	color: #FFF;
+	font-size: 18px;
+	text-decoration: none;
+	
+	border-radius: 0 8px 0 0;
+	
+	-o-transition: all 0.2s linear;
+	-moz-transition: all 0.2s linear;
+	-webkit-transition: all 0.2s linear;
+	transition: all 0.2s linear;
+	
+	border: 1px solid #999;
+	border-right: none !important;
+}
+
+#topNav ul li a:hover
+{
+	color: #DB5C5C;
+	border: 1px solid #D89999;
+	border-radius: 5px 10px 0 0;
+}
+
+#inputPanel {
+	height:27px;
+	background-color: #999;
+}
+
+#inputWindow {
+
+	float:left;
+	width:85%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px inset #CCC;
+}
+
+#connectionBox {
+	width:125px;
+	height:20px;
+	background: #FF0000;
+	float: left;
+	border: 2px ridge grey;
+	margin-left: 5px;
+	margin-top: 1px;
+	font-weight: bold;
+	text-align: center;
+}
+
+body {
+	background-color: #000000;
+}
+
+html, body {
+	margin: 0;
+	height: 100%;
+}
+
+#outputWindowWrapper .inputCommand {
+	color: yellow;
+}
+
+.totalPlayersRow {
+	font-size: 12px;
+}
+
+.rightPanelLabel {
+
+}
+
+.rightPanelValue {
+
+	color: #FF3700;
+}
+
+
+a {
+	color: 00B7FF;
+	text-shadow: 1px 2px 1px #000;
+	-webkit-transition: all 0.2s ease 0s;
+	-o-transition: all 0.2s ease 0s;
+	-moz-transition: all 0.2s ease 0s;
+	transition: all 0.2s ease 0s;
+}
+
+a:hover {
+	color: #DB5C5C;
+}
+
+.hidden {
+	display: none;
+}
+
+.clearFix:after {
+	content: " ";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	height: 0;
+}
+
+#outputWindowBottom {
+
+	display: none;
+	height: 20%;
+}
+
+#outputWindowWrapper.split #outputWindowBottom {
+
+	display: block;
+}
+
+#outputWindowBottom {
+	display: none;
+	position: relative;
+	overflow: hidden;
+}
+
+#outputWindow {
+	padding:10px;
+	color: #FFFFFF;
+	font-family: monospace;
+	white-space: pre-wrap;
+}
+
+#outputWindowBottomInner {
+	z-index: 0;
+	position: absolute;
+	bottom: 0;
+	margin: 10px;
+	color: #FFFFFF;
+	font-family: monospace;
+	white-space: pre-wrap;
+}
+
+#outputWindowBottomSeparator {
+	z-index: 1;
+	top: 0;
+	width: 100%;
+	position: absolute;
+	height: 5px;
+	background-color: #FFF;
+}
+
+#outputWindowBorderTopMargin {
+}
+
+#outputWindowWrapper.split #outputWindowMargin {
+	height: 80%;
+}
+
+#outputWindowMargin {
+	overflow: auto;
+	overflow-x: hidden;
+	height: 100%;
+}
+
+#macros {
+
+	background-color: #000;
+	color: #FFF;
+	width: 500px;
+}
+
+#macroButtons {
+	padding: 10px 0px 0px 0px;
+	border-bottom: 1px solid #FFF;
+}
+
+#macroButtons ul {
+	list-style: none;
+	padding: 0 0 0 0;
+	margin: 0 0 0 5px;
+}
+
+#macroButtons ul li {
+	list-style: none;
+}
+
+#macroButtons ul li a {
+	float: left;
+	background-color: #393939;
+	padding: 5px 20px 5px 20px;
+	color: #FFF;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 9px 9px 0px 0px;
+	border-top: 1px solid #FFF;
+	border-right: 1px solid #FFF;
+}
+
+#macroButtons ul li a:hover {
+	color: #DB5C5C !important;
+}
+
+#macroButtons ul li:first-child a {
+	border-left: 1px solid #FFF;
+}
+
+#macroContainer {
+	
+	padding: 10px;
+}
+
+#macroContainer a {
+	display: inline-block;
+}
+
+#macroContainer a.active {
+	color: #DB5C5C;
+}
+
+#macroEditor {
+
+	padding: 10px;
+	border-top: 1px solid #FFF;
+}
+
+#macroEditor input[type='text'],
+#macroEditor textarea {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+
+	width: 100%;
+}
+
+#macroEditor textarea {
+	height: 50px;
+}
+
+#fancybox-outer {
+	background: none !important;
+}
+
+#fancybox-content {
+	border: 1px solid #999 !important;
+	border-radius: 6px;
+}
+
+#inputBox {
+	border: 1px solid #000;
+	background-color: #FFF;
+	width: 85%;
+	float: left;
+	margin-top: 1px;
+	margin-left: 2px;
+	padding: 1px 5px 1px 5px;
+	position: relative;
+	font-family: monospace;
+	font-size: 16px;
+}
+
+#inputCursor {
+	width: 2px;
+	height: 16px;
+	position: absolute;
+	background-color: #000;
+	left: 14px;
+}
+
+#inputTextarea {
+	position: absolute;
+	opacity: 0;
+}
+
+.floatLeft {
+
+	float: left;
+}
+
+.floatRight {
+
+	float: right;
+}
+
+
+
+/*** Start of Sign In Styles ***/
+#signIn {
+
+	background-color: #353535;
+	color: #CCC;
+	width: 550px;
+	padding: 10px;
+	font-size: 20px;
+	font-family: Segoe UI, Helvetica, Arial, sans-serif;
+	max-height: 600px;
+	overflow: auto;
+}
+
+#signIn .header {
+
+	padding: 5px;
+	text-align: center;
+	display: block;
+	background-color: #222;
+	border-radius: 6px;
+	border: 1px solid #AAA;
+	font-weight: bold;
+}
+
+#signInForm {
+
+	margin-top: 5px;
+	width: 250px;
+	float: left;
+}
+
+#signInForm .error {
+
+	color: #F7394F;
+	font-weight: bold;
+	display: block;
+	font-size: 16px;
+}
+
+#signInForm .error.hidden {
+	display: none !important;
+}
+
+.fancyInput,
+.fancyInput {
+
+	display: block;
+	background-color: #222;
+	border: 1px solid #999;
+	border-radius: 6px;
+	outline: none;
+	padding: 3px;
+	margin: 0px;
+	line-height: 20px;
+	font-size: 20px;
+	transition: 0.2s linear;
+	color: #CCC;
+}
+
+.fancyInput:focus,
+.fancyInput:focus {
+
+	background-color: #CCC;
+	border: 1px solid #A65555;
+	color: #333;
+}
+
+#signIn button {
+	font-size: 16px;
+	background-color: #999;
+	border: 1px solid #000;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 5px 30px 5px 30px;
+	transition: 0.2s linear;
+}
+
+#signIn button:hover {
+	background-color: #CCC;
+}
+
+#signInForm button {
+
+	width: 150px;
+}
+
+#signInOr {
+	margin-top: 65px;
+	display: block;
+	float: left;
+	font-weight: bold;
+	font-size: 25px;
+}
+
+#signInPanel .createNewCharacter {
+
+	float: left;
+	margin-left: 20px;
+	margin-top: 65px;
+}
+
+#createNewCharacter {
+
+	margin-top: 20px;
+}
+
+#createNewCharacter input[type='text'],
+#createNewCharacter input[type='password'] {
+
+	display: inline-block;
+	width: 200px;
+	font-size: 20px;
+	line-height: 20px;
+}
+
+#createNewCharacter .label {
+	display: inline-block;
+	width: 200px;
+}
+
+#createNewCharacter input[type='radio'] {
+	margin: 0;
+	padding: 0;
+}
+
+.race {
+
+	display: block;
+	margin-top: 10px;
+}
+
+.raceOption {
+
+	float: left;
+	width: 150px;
+	padding-left: 50px;
+}
+
+.raceDescription {
+
+	float: left;
+	font-size: 16px;
+	width: 330px;
+}
+
+.class {
+
+	display: block;
+	margin-top: 10px;
+}
+
+.classOption {
+
+	float: left;
+	width: 150px;
+	padding-left: 50px;
+}
+
+.classDescription {
+
+	float: left;
+	font-size: 16px;
+	width: 330px;
+}
+
+.strong {
+
+	font-weight: bold;
+}
+
+#createCharacterSubmission {
+
+	margin-top: 10px;
+}
+
+#createNewCharacterErrors {
+
+	list-style: none;
+	padding: 0 0 0 0;
+	margin-bottom: 3px;
+	color: #F7394F;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+#createNewCharacterErrors li {
+
+	display: block;
+}
+/*** End of Sign In styles. ***/
