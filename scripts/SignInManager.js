@@ -185,10 +185,14 @@ function SignInManager(client)
 	});
 }
 
+SignInManager.prototype.isVisible = function() {
+    return $('#fancybox-wrap').is(':visible');
+};
+
 SignInManager.prototype.showRegistrationPanel = function()
 {
 	this.displayPanel("registrationPanel");
-}
+};
 
 SignInManager.prototype.handleUserCreationDetailsMessage = function(message)
 {

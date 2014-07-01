@@ -393,6 +393,8 @@ $(document).ready(function() {
 	}
 	
 	client.createWebSocket();
+
+    signInManager.display();
 	
 	client.processCommand = function(commandObject)
 	{
@@ -441,7 +443,15 @@ $(document).ready(function() {
 		}
 		else if(commandObject.method == "Display Sign In Lightbox")
 		{
-			signInManager.display();
+            if(!signInManager.isVisible()) {
+                signInManager.display();
+            }
+            var signInButton = document.getElementById('signInSubmitButton');
+            signInButton.disabled = false;
+            signInButton.innerText = "Sign In";
+            var createNewCharacterButton = document.getElementById('createNewCharacterButton');
+            createNewCharacterButton.disabled = false;
+            createNewCharacterButton.innerText = "Create New Character";
 		}
 	}
 	
