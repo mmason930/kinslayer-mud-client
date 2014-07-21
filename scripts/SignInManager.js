@@ -11,7 +11,7 @@ function SignInManager(client)
 	this.$signInPasswordInput = this.$signInForm.find(":input[name='Password']");
 	this.$createNewCharacterButton = this.$signInPanel.find(".createNewCharacter button");
 	this.$classGroups = $(".classGroup");
-	this.$createCharacterCreation = $("#createCharacterCompletion");
+	//this.$createCharacterCreation = $("#createCharacterCompletion");
 	this.$createNewCharacterForm = $("#createNewCharacter");
 
 	this.$raceOptions = $("#createNewCharacter input[name='Race']");
@@ -208,7 +208,7 @@ SignInManager.prototype.handleUserCreationDetailsMessage = function(message)
 	this.hasUserCreationDetails = true;
 
 	this.showRegistrationPanel();
-}
+};
 
 SignInManager.prototype.showSignInError = function(message)
 {
@@ -235,12 +235,12 @@ SignInManager.prototype.showCreateNewCharacterErrors = function(errors)
 
 	this.$createNewCharacterErrors.removeClass("hidden");
 	this.$signIn.scrollTop(0);
-}
+};
 
 SignInManager.prototype.hideCreateNewCharacterErrors = function()
 {
 	this.$createNewCharacterErrors.html("").addClass("hidden");
-}
+};
 
 SignInManager.prototype.handleSignInResponse = function(message)
 {
@@ -255,24 +255,24 @@ SignInManager.prototype.handleSignInResponse = function(message)
 	{
 		this.close();
 	}
-}
+};
 
 SignInManager.prototype.close = function()
 {
 	$.fancybox.close();
-}
+};
 
 SignInManager.prototype.display = function()
 {
 	$("#signInLightboxAnchor").click();
-}
+};
 
 SignInManager.prototype.displayPanel = function(panelId)
 {
 	this.$signIn.children().addClass("hidden");
 	$("#" + panelId).removeClass("hidden");
 	$.fancybox.resize();
-}
+};
 
 SignInManager.prototype.handleUserCreationMessage = function(message)
 {
@@ -283,7 +283,7 @@ SignInManager.prototype.handleUserCreationMessage = function(message)
 	}
 
 	this.close();
-}
+};
 
 SignInManager.prototype.clearRegistrationForm = function()
 {
@@ -291,4 +291,4 @@ SignInManager.prototype.clearRegistrationForm = function()
 	$("#createNewCharacter input[type='radio']").prop("checked", false);
 
 	this.hideCreateNewCharacterErrors();
-}
+};

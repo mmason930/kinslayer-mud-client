@@ -10,7 +10,7 @@ function InputManager(client)
 	this.buffer = "Test Test Test";
 	
 	this.fontWidth = null;
-	this.xInitialPosition = parseInt($("#inputBox").css("padding-left"));
+	this.xInitialPosition = parseInt(this.$inputBox.css("padding-left"));
 	this.cursorOffset = 0;
 	
 	this.measureFontWidth();
@@ -40,17 +40,17 @@ InputManager.prototype.moveCursor = function(offset)
 	
 	this.$inputTextarea.css("left", this.$inputCursor.css("left"));
 	this.resetCursorBlink();
-}
+};
 
 InputManager.prototype.moveCursorForward = function()
 {
 	this.moveCursor(this.cursorOffset + 1);
-}
+};
 
 InputManager.prototype.moveCursorBackward = function()
 {
 	this.moveCursor(this.cursorOffset - 1);
-}
+};
 
 InputManager.prototype.resetCursorBlink = function()
 {
@@ -60,23 +60,23 @@ InputManager.prototype.resetCursorBlink = function()
 		clearInterval(this.cursorInterval);
 	
 	this.cursorInterval = setInterval(this.cursorBlinkCallback, 500);
-}
+};
 
 InputManager.prototype.processBackspace = function() {
 
 	
-}
+};
 
 InputManager.prototype.getBuffer = function()
 {
 	return this.buffer;
-}
+};
 
 InputManager.prototype.setBuffer = function(buffer)
 {
 	this.buffer = buffer;
 	this.$inputBox.text(buffer);
-}
+};
 
 InputManager.prototype.setupTextArea = function() {
 
@@ -84,7 +84,7 @@ InputManager.prototype.setupTextArea = function() {
 						.css("height", this.$inputBox.css("height"))
 						.css("left", this.xInitialPosition)
 						.css("top", "0");
-}
+};
 
 InputManager.prototype.measureFontWidth = function() {
 
@@ -108,4 +108,4 @@ InputManager.prototype.measureFontWidth = function() {
 	console.log("Font Width Measured As: " + this.fontWidth);
 	
 	$div.remove();
-}
+};

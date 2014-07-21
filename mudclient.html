@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="fancybox/jquery.easing-1.3.pack.js"></script>
 	<script type="text/javascript" src="scripts/MacroManager.js"></script>
 	<script type="text/javascript" src="scripts/KeyboardManager.js"></script>
+	<script type="text/javascript" src="scripts/GameConsole.js"></script>
 	<script type="text/javascript" src="scripts/Client.js"></script>
 	<script type="text/javascript" src="scripts/SignInManager.js"></script>
 </head>
@@ -36,23 +37,23 @@
 			w.google_conversion_label = "izCqCOPKpQcQvcKj2gM";
 			w.google_conversion_value = 0;
 			w.google_remarketing_only = false;
-		}
+		};
 		// DO NOT CHANGE THE CODE BELOW.
 		goog_report_conversion = function(url) {
 			goog_snippet_vars();
 			window.google_conversion_format = "3";
 			window.google_is_call = true;
-			var opt = new Object();
+			var opt = {};
 			opt.onload_callback = function() {
 				if (typeof(url) != 'undefined') {
 					window.location = url;
 				}
-			}
+			};
 			var conv_handler = window['google_trackConversion'];
 			if (typeof(conv_handler) == 'function') {
 				conv_handler(opt);
 			}
-		}
+		};
 		/* ]]> */
 	</script>
 
@@ -71,7 +72,7 @@
 			</ul>
      
 			<div id="featuredMud">
-				<a href="#" target="_blank" rel="nofollow"><img src="#"></img></a>
+				<a href="#" target="_blank" rel="nofollow"><img src="#"></a>
 			</div>
 			<div style="clear:left;"></div>
 		</div>
@@ -93,6 +94,10 @@
 			<div id="inputPanel">
 				<input id="inputWindow" type="text" />
 				<div id="connectionBox"></div>
+				<div id="parseIcon">
+					<span>P</span>
+					<div>X</div>
+				</div>
 			</div>
 		</div>
 	</div>

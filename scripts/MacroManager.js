@@ -142,7 +142,7 @@ MacroManager.prototype.addUserMacroHtml = function(keyCode, replacement, id, sel
 	
 	if(select)
 		$a.click();
-}
+};
 
 MacroManager.prototype.removeFocusFromActiveMacroAnchor = function() {
 	
@@ -152,26 +152,26 @@ MacroManager.prototype.removeFocusFromActiveMacroAnchor = function() {
 		$activeAnchor.remove();
 	else
 		$activeAnchor.removeClass("active");
-}
+};
 
 MacroManager.prototype.clearMacroEditForm = function() {
 
 	this.$macroKey.val("");
 	this.$macroReplacement.val("");
 	this.$macroId.val("");
-}
+};
 
 MacroManager.prototype.getMacroAnchorById = function(id) {
 	return this.$macroContainer.find("a").filter(function(index, anchor) { return $(anchor).data("id") == id; })
-}
+};
 
 MacroManager.prototype.getMacroAnchorByKeyCode = function(keyCode) {
 	return this.$macroContainer.find("a").filter(function(index, anchor) { return $(anchor).data("key-code") == keyCode; })
-}
+};
 
 MacroManager.prototype.removeMacroHtml = function(keyCode) {
 	this.getMacroAnchorByKeyCode(keyCode).parent().remove();
-}
+};
 
 MacroManager.prototype.processMacro = function(keyCode) {
 	
@@ -186,7 +186,7 @@ MacroManager.prototype.processMacro = function(keyCode) {
 	}
 	
 	return false;
-}
+};
 
 MacroManager.prototype.processSaveMacroResponse = function(id, keyCode, replacement, wasSuccessful) {
 
@@ -220,7 +220,7 @@ MacroManager.prototype.processSaveMacroResponse = function(id, keyCode, replacem
 
 	this.macros[keyCode] = replacement;
 	this.macroSavingId = null;
-}
+};
 
 MacroManager.prototype.loadMacros = function(macroArray)
 {
@@ -233,26 +233,26 @@ MacroManager.prototype.loadMacros = function(macroArray)
 		self.macros[ macro.keyCode ] = macro.replacement;
 		self.addUserMacroHtml(macro.keyCode, macro.replacement, macro.id);
 	});
-}
+};
 
 MacroManager.prototype.getMacro = function(keyCode)
 {
 	return this.macros[ String(keyCode) ];
-}
+};
 
 MacroManager.prototype.disableEditForm = function()
 {
 	this.$macroKey.attr("disabled", "disabled");
 	this.$macroReplacement.attr("disabled", "disabled");
-}
+};
 
 MacroManager.prototype.enableEditForm = function()
 {
 	this.$macroKey.removeAttr("disabled");
 	this.$macroReplacement.removeAttr("disabled");
-}
+};
 
 MacroManager.prototype.canSave = function()
 {
 	return this.macroSaveId == null && this.$macroContainer.find("a.active").length != 0;
-}
+};
