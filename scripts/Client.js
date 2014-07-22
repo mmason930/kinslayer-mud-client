@@ -83,6 +83,7 @@ $(document).ready(function() {
 	client.$connectionBox = $("#connectionBox");
 	client.$macroKey = $("#macroKey");
 	client.$featuredMud = $("#featuredMud");
+	client.INPUT_DELIMITER = ';';
 
 	client.$parseIcon.on("click", function(e) {
 
@@ -308,8 +309,19 @@ $(document).ready(function() {
 			var input = $('#inputWindow').val();
 			$("#inputWindow").select();
 
-			(client.inputParsingOn ? input.split(";") : [input]).forEach(function(inputCommand) {
+			var inputUpToLeadingDelimiter = null;
 
+			if(client.inputParsingOn && input.search(/^ *;/g) != -1)
+			{//Strip off the start of the command, up to the first ';'. We will pad it on later.
+				var firstSemicolonIndex = input.indexOf(client.INPUT_DELIMITER);
+				inputUpToLeadingDelimiter = input.substr(0, firstSemicolonIndex + 1);
+				input = input.substr(firstSemicolonIndex + 1);
+			}
+
+			(client.inputParsingOn ? input.split(client.INPUT_DELIMITER) : [input]).forEach(function(inputCommand, index, array) {
+
+				if(index === 0 && inputUpToLeadingDelimiter !== null)
+					inputCommand = inputUpToLeadingDelimiter + inputCommand;
 				client.submitInputCommand(inputCommand);
 			});
 

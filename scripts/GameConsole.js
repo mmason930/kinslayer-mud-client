@@ -6,7 +6,7 @@ function GameConsole()
 	this.$lastOutputDiv = null;
 
 	//Holds the font style status of the output window. This changes when new telnet color codes come in.
-	this.currentStyle = {
+	this.currentStyle = this.writeStyle = {
 
 		colorCode: null,
 		isBold: false,
@@ -119,7 +119,7 @@ GameConsole.prototype.createNewLine = function()
 	}
 
 	//Open a span for the current color, if one exists.
-	if(this.currentStyle.spanIsOpen())
+	if(this.writeStyle.spanIsOpen())
 	{
 		this.$lastOutputDiv.append(this.createColorSpan(this.currentStyle.colorCode, this.currentStyle.isBold));
 		this.cacheLastOutputDiv();
@@ -129,7 +129,7 @@ GameConsole.prototype.createNewLine = function()
 	return this.$lastOutputDiv;
 };
 
-GameConsole.prototype.getVisisbleRange = function()
+GameConsole.prototype.getVisibleRange = function()
 {
 	var outputWindowMargin = this.$outputWindowMargin[0];
 	var scrollTop = outputWindowMargin.scrollTop;
@@ -143,7 +143,7 @@ GameConsole.prototype.getVisisbleRange = function()
 
 GameConsole.prototype.rerender = function()
 {
-	var visibleRange = this.getVisisbleRange();
+	var visibleRange = this.getVisibleRange();
 	this.$spacerDiv.remove();
 	this.$outputWindow.html("").append(this.$spacerDiv);
 	this.$spacerDiv.height((visibleRange.lineTop * this.lineHeight) + 4);
@@ -158,34 +158,36 @@ GameConsole.prototype.rerender = function()
 		this.$outputWindow.append($div);
 		this.visibleLines.push($div);
 	}
+
+	//this.$lastOutputDiv = $(this.outputLines[this.outputLines.length - 1], this.visibleSplitScreenLines[ this.visibleSplitScreenLines.length - 1 ]);
 };
 
 GameConsole.prototype.resize = function()
 {
-	this.$outputWindow.height((this.outputLines.length) * 16);
+	this.$outputWindow.height((this.outputLines.length) * this.lineHeight);
 };
 
-GameConsole.prototype.appendLines = function(outputReceived, lineIsTerminated, ignoreColors)
+GameConsole.prototype.appendLines = function(outputReceived, lineIsTerminated)
 {
 	var outputReceivedLength = outputReceived.length, self = this;
 	outputReceived.forEach(function(line, index) {
-		self.append(line, index != outputReceivedLength - 1, ignoreColors);
+		self.append(line, index != outputReceivedLength - 1);
 	});
 };
 
 GameConsole.prototype.isWindowSplit = function()
-{
+{//TODO: This can be cached in boolean.
 	return this.$outputWindowWrapper.hasClass("split");
 };
 
-GameConsole.prototype.append = function(outputReceived, lineIsTerminated, ignoreColors)
+GameConsole.prototype.append = function(outputReceived, lineIsTerminated)
 {
 	if(outputReceived.lineComponents !== undefined)
 	{
 		var self = this, lineComponentsLength = outputReceived.lineComponents.length;
 		outputReceived.lineComponents.forEach(function(component, index) {
 
-			self.append(component, lineIsTerminated && index == lineComponentsLength - 1, ignoreColors);
+			self.append(component, lineIsTerminated && index == lineComponentsLength - 1);
 		});
 
 		return;
@@ -195,7 +197,7 @@ GameConsole.prototype.append = function(outputReceived, lineIsTerminated, ignore
 		var operation = outputReceived[0];
 		var value = outputReceived[1];
 
-		if(operation == "lastspan")
+		if(operation === "lastspan")
 		{
 			var $lastSpan = this.$lastOutputDiv.children("span:last-child");
 
@@ -204,8 +206,18 @@ GameConsole.prototype.append = function(outputReceived, lineIsTerminated, ignore
 			else //We couldn't find the span. That's certainly not good!
 				this.$lastOutputDiv.append(value);
 		}
-		else if(operation == "append")
+		else if(operation === "append")
 			this.$lastOutputDiv.append(value);
+		else if(operation === "openspan")
+		{
+			this.writeStyle.colorCode = value.colorCode;
+			this.writeStyle.isBold = value.isBold;
+		}
+		else if(operation === "closespan")
+		{
+			this.writeStyle.colorCode = null;
+			this.writeStyle.isBold = false;
+		}
 	}
 	else
 		this.$lastOutputDiv.append(outputReceived);
@@ -213,7 +225,7 @@ GameConsole.prototype.append = function(outputReceived, lineIsTerminated, ignore
 	this.cacheLastOutputDiv();
 
 	if(lineIsTerminated)//A newline has been found. Terminate this line by beginning the next one.
-		this.createNewLine(!ignoreColors);
+		this.createNewLine();
 
 	if (!this.isWindowSplit())
 	{
@@ -247,11 +259,11 @@ GameConsole.prototype.formatMUDOutputForWindow = function(outputReceived)
 {
 	var self = this;
 	return outputReceived   .replace(/(\r)/gm, "")
-							.replace("&", "&amp;")
-							.replace("<", "&lt;")
-							.replace(">", "&gt;")
-							.replace("'", "&apos;")
-							.replace('"', "&quot;")
+							.replace(/&/g, "&amp;")
+							.replace(/</g, "&lt;")
+							.replace(/>/g, "&gt;")
+							.replace(/'/g, "&apos;")
+							.replace(/"/g, "&quot;")
 							.split("\n")
 							.map(function(line)
 	{
@@ -278,12 +290,14 @@ GameConsole.prototype.formatMUDOutputForWindow = function(outputReceived)
 			else {//Revert to "normal" color.
 				self.currentStyle.colorCode = null;
 				self.currentStyle.isBold = false;
+				lineData.lineComponents.push(["closespan", null]);
 				continue;//And we are done, since do not need to open another tag.
 			}
 
 			//Add the new span tag.
-			if(self.currentStyle.colorCode != null)//We may have a bold start without a color. We won't append the span until we know which color we want.
-				lineData.lineComponents.push(["append", self.createColorSpan(self.currentStyle.colorCode, self.currentStyle.isBold)]);
+			lineData.lineComponents.push(["closespan", null]);
+			lineData.lineComponents.push(["openspan", {colorCode: self.currentStyle.colorCode == null ? 37 : self.currentStyle.colorCode, isBold: self.currentStyle.isBold}]);
+			lineData.lineComponents.push(["append", self.createColorSpan(self.currentStyle.colorCode == null ? 37 : self.currentStyle.colorCode, self.currentStyle.isBold)]);
 		}
 
 		//Copy the remainder into the buffer.
