@@ -27,6 +27,7 @@ function GameConsole()
 	this.maxVisibleSplitScreenLines = 100;
 	this.lineHeight = null;
 	this.colorCodeRegex = /\x1B\[(\d+)m/g;
+	this.MAX_OUTPUT_WINDOW_LINES = 10000;
 	this.colorMap = {
 		 0: [null, null],         //Normal
 		31: ["800000", "ff0000"], //Red
@@ -39,7 +40,7 @@ function GameConsole()
 	};
 
 	this.calculateLineHeight();
-	this.setupOutputWindow();
+	//this.setupOutputWindow();
 	this.createNewLine();
 
 	this.$outputWindowWrapper.on("mousedown", function(e)
@@ -85,7 +86,7 @@ function GameConsole()
 			}
 		}
 
-		self.rerender();
+		//self.rerender();
 	});
 }
 
@@ -125,7 +126,14 @@ GameConsole.prototype.createNewLine = function()
 		this.cacheLastOutputDiv();
 	}
 
-	this.resize();
+	this.visibleLines.push(this.$lastOutputDiv.eq(0));
+
+	if(this.visibleLines.length > this.MAX_OUTPUT_WINDOW_LINES) {
+		this.visibleLines[0].remove();
+		this.visibleLines.splice(0, 1);
+	}
+
+	//this.resize();
 	return this.$lastOutputDiv;
 };
 

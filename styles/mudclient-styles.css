@@ -152,8 +152,15 @@ html, body {
 }
 
 #outputWindow > div,
-#outputWindowBottomInner > div {
-    height: 16px;
+#outputWindowBottomInner > div,
+#sizingDiv {
+    min-height: 16px;
+    line-height: 16px;
+
+}
+
+#staticElements {
+    display: none;
 }
 
 .totalPlayersRow {
