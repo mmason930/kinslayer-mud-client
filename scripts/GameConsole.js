@@ -28,6 +28,9 @@ function GameConsole()
 	this.lineHeight = null;
 	this.colorCodeRegex = /\x1B\[(\d+)m/g;
 	this.MAX_OUTPUT_WINDOW_LINES = 10000;
+	this.prevScrollTop = 0;
+	this.prevOffsetHeight = 0;
+	this.disableSplitting = false;
 	this.colorMap = {
 		 0: [null, null],         //Normal
 		31: ["800000", "ff0000"], //Red
@@ -67,11 +70,19 @@ function GameConsole()
 			delta = 40 * e.originalEvent.detail;
 		}
 
+//		console.log("DELTA: " + delta);
+
 		if(delta < 0)
 			return;
 
-		if(self.$outputWindowMargin.prop("scrollTop") + self.$outputWindowMargin.prop("offsetHeight") + 10 >= self.$outputWindowMargin.prop("scrollHeight")) {
+//		console.log("SCROLL TOP: " + self.$outputWindowMargin.prop("scrollTop"));
+//		console.log("OFFSET HEIGHT: " + self.$outputWindowMargin.prop("offsetHeight"));
+//		console.log("SCROLL HEIGHT: " + self.$outputWindowMargin.prop("scrollHeight"));
+
+		if(self.$outputWindowWrapper.hasClass("split") && self.$outputWindowMargin.prop("scrollTop") + self.$outputWindowMargin.prop("offsetHeight") + 10 >= self.$outputWindowMargin.prop("scrollHeight")) {
+			console.log("REMOVED SPLIT");
 			self.$outputWindowWrapper.removeClass("split");
+			self.setupDisableSplitting();
 		}
 	});
 
@@ -79,15 +90,35 @@ function GameConsole()
 	{
 		var scrollDifference = Math.abs(this.scrollTop - (this.scrollHeight - this.offsetHeight));
 
+		var delta = 0;
+		var scrollDelta = this.scrollTop - self.prevScrollTop;
+
+		if(this.offsetHeight != self.prevOffsetHeight)
+			scrollDelta = 0;
+
+		self.prevScrollTop = this.scrollTop;
+		self.prevOffsetHeight = this.offsetHeight;
+
 		if(!self.$outputWindowWrapper.hasClass("split")) {
 
-			if(scrollDifference != 0) {
-				self.$outputWindowWrapper.addClass("split");
+			if(scrollDifference != 0 && scrollDelta < 0) {
+				if(!self.disableSplitting) {
+					self.$outputWindowWrapper.addClass("split");
+				}
 			}
 		}
 
 		//self.rerender();
 	});
+}
+
+GameConsole.prototype.setupDisableSplitting = function()
+{
+	this.disableSplitting = true;
+	var self = this;
+	setTimeout(function() {
+		self.disableSplitting = false;
+	}, 100);
 }
 
 GameConsole.prototype.setupOutputWindow = function()
