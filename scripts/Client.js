@@ -172,7 +172,7 @@ $(document).ready(function() {
 			socket = new WebSocket("ws://kinslayermud.org:4001", protocol);
 		}
 		else {
-			socket = new WebSocket("ws://kinslayermud.org:4001", protocol);
+			socket = new WebSocket("ws://localhost:4001", protocol);
 		}
 
 		socket.onopen = function()
