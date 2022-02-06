@@ -13,6 +13,7 @@ var gameConsole = null;
 var commandHistory = [];
 var commandHistoryPosition = 0;
 var onlineTimeInterval = setInterval(updateOnlineTime, 1000);
+var wsProtocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
 
 String.prototype.trim = function() {
 	return this.replace(/^\s+|\s+$/g,"");
@@ -169,10 +170,10 @@ $(document).ready(function() {
 		var protocol = "mud-protocol";
 
 		if(!isDev()) {
-			socket = new WebSocket("ws://kinslayermud.org:4001", protocol);
+			socket = new WebSocket(wsProtocol + "kinslayermud.org/wskinslayer", protocol);
 		}
 		else {
-			socket = new WebSocket("ws://localhost:4001", protocol);
+			socket = new WebSocket(wsProtocol + "localhost/wskinslayer", protocol);
 		}
 
 		socket.onopen = function()
