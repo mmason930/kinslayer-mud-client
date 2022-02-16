@@ -1,6 +1,6 @@
 function MacroManager(client)
 {
-	var self = this;
+	let self = this;
 	this.client = client;
 	this.macroSaveId = null;
 	this.$macroNewButton = $("#macroNewButton");
@@ -8,17 +8,51 @@ function MacroManager(client)
 	this.$macroSaveButton = $("#macroSaveButton");
 	this.$macroContainer = $("#macroContainer");
 	this.$macroKey = $("#macroKey");
+	this.$macroLocation = $("#macroLocation");
+	this.$macroCode = $("#macroCode");
 	this.$macroReplacement = $("#macroReplacement");
 	this.$macroId = $("#macroId");
 	this.macros = {};
+
+	this.locationMap = {
+		0: {
+			constant: "DOM_KEY_LOCATION_STANDARD",
+			display: "Standard"
+		},
+
+		1: {
+			constant: "DOM_KEY_LOCATION_LEFT",
+			display: "Left"
+		},
+
+		2: {
+			constant: "DOM_KEY_LOCATION_RIGHT",
+			display: "Right"
+		},
+
+		3: {
+			constant: "DOM_KEY_LOCATION_NUMPAD",
+			display: "Numpad"
+		},
+
+		4: {
+			constant: "DOM_KEY_LOCATION_MOBILE",
+			display: "Mobile"
+		},
+
+		5: {
+			constant: "DOM_KEY_LOCATION_JOYSTICK",
+			display: "Joystick"
+		}
+	};
 	
 	this.$macroNewButton.on("click", function(e) {
 
 		e.preventDefault();
 		
-		var $newMacroAnchor = self.getMacroAnchorByKeyCode(null);
+		let $newMacroAnchor = self.getMacroAnchorByKeyCode(null, null);
 		if($newMacroAnchor.length == 0)
-			self.addUserMacroHtml(null, null, null, true);
+			self.addUserMacroHtml(null, null, null, null, null, true);
 		else
 			$newMacroAnchor.click();
 		
@@ -28,20 +62,22 @@ function MacroManager(client)
 	this.$macroDeleteButton.on("click", function(e) {
 
 		e.preventDefault();
-		var keyCode = parseInt(self.$macroKey.val());
+		let keyCode = parseInt(self.$macroKey.val());
+		let location = self.$macroLocation.val() == '' ? null : parseInt(self.$macroLocation.val());
 
 		if(keyCode >= 0 && !isNaN(keyCode))
 		{
-			var $anchor = self.$macroContainer.find("a.active");
+			let $anchor = self.$macroContainer.find("a.active");
 
-			var command = {
+			let command = {
 				method:		"Delete User Macro",
+				location:	location,
 				keyCode:	keyCode
 			};
-			
+
 			self.client.sendCommand(command);
 			$anchor.parent().hide("slow").remove();
-			delete self.macros[keyCode];
+			delete self.macros[self.getMacroMapKey(keyCode, location)];
 			self.clearMacroEditForm();
 			self.disableEditForm();
 		}
@@ -50,13 +86,15 @@ function MacroManager(client)
 	this.$macroContainer.on("click", "a", function(e) {
 
 		e.preventDefault();
-		var $this = $(this);
+		let $this = $(this);
 
 		self.removeFocusFromActiveMacroAnchor();
 		$this.addClass("active");
 		self.enableEditForm();
 
 		self.$macroKey.val($this.data("key-code"));
+		self.$macroLocation.val($this.data("location"));
+		self.$macroCode.val($this.data("code"));
 		self.$macroReplacement.val($this.data("replacement"));
 		self.$macroId.val($this.data("id"));
 	});
@@ -67,19 +105,30 @@ function MacroManager(client)
 		if(!self.canSave())
 			return;
 
-		var $macroAnchorWithKeyCode = self.getMacroAnchorByKeyCode(parseInt(self.$macroKey.val()));
+		let $macroAnchorWithKeyCode = self.getMacroAnchorByKeyCode(
+			parseInt(self.$macroKey.val()),
+			self.$macroLocation.val() == '' || self.$macroLocation.val() == undefined ? null : parseInt(self.$macroLocation.val())
+		);
 		if($macroAnchorWithKeyCode.length != 0 && !$macroAnchorWithKeyCode.hasClass("active"))
 		{
 			alert("There is another macro with this key code already.");
 			return;
 		}
 
-		var keyCodeValue = self.$macroKey.val();
-		var replacementValue = self.$macroReplacement.val();
-		var idValue = self.$macroId.val();
+		let keyCodeValue = self.$macroKey.val();
+		let locationValue = self.$macroLocation.val();
+		let codeValue = self.$macroCode.val();
+		let replacementValue = self.$macroReplacement.val();
+		let idValue = self.$macroId.val();
 
 		if(keyCodeValue == undefined || keyCodeValue == "" || isNaN(keyCodeValue)) {
 			alert("The macro you are trying to save does not have a valid key set.");
+			return;
+		}
+
+		// If location is set, it must be a valid integer.
+		if(locationValue != undefined && locationValue != "" && isNaN(locationValue)) {
+			alert("The macro you are trying to save does not have a valid location set.");
 			return;
 		}
 
@@ -88,9 +137,11 @@ function MacroManager(client)
 			return;
 		}
 
-		var command = {
+		let command = {
 			method:			"Save User Macro",
 			keyCode:		parseInt(keyCodeValue),
+			location:		(locationValue == '' || locationValue == undefined) ? null : parseInt(locationValue),
+			code:			(codeValue == undefined ? '' : codeValue),
 			replacement:	replacementValue,
 			id:				idValue != null && idValue != "" ? parseInt(idValue) : null
 		};
@@ -110,7 +161,7 @@ function MacroManager(client)
 		},
 		onComplete: function() {
 		
-			var $anchor = self.$macroContainer.find("a.active");
+			let $anchor = self.$macroContainer.find("a.active");
 			if($anchor.length == 0)
 				self.disableEditForm();
 			else
@@ -119,10 +170,32 @@ function MacroManager(client)
 	});
 }
 
-MacroManager.prototype.addUserMacroHtml = function(keyCode, replacement, id, select) {
+MacroManager.prototype.getMacroMapKey = function(keyCode, location) {
+	return keyCode + "_" + location;
+}
 
-	var $a = $("<a></a>");
-	$a.text(keyCode == null ? "<NEW MACRO>" : ("KEY" + keyCode));
+MacroManager.prototype.getLocationDisplay = function(location) {
+	let locationData = this.locationMap[location];
+
+	if(locationData == null) {
+		return "All";
+	}
+
+	return locationData.display;
+}
+
+MacroManager.prototype.getMacroDisplay = function(keyCode, location, code) {
+	if(code != undefined && code != '') {
+		return code;
+	}
+	let locationDisplay = this.getLocationDisplay(location);
+	return keyCode == null ? "<NEW MACRO>" : ("KEY" + keyCode + " (" + locationDisplay + ")");
+}
+
+MacroManager.prototype.addUserMacroHtml = function(keyCode, location, code, replacement, id, select) {
+
+	let $a = $("<a></a>");
+	$a.text(this.getMacroDisplay(keyCode, location, code));
 	$a.attr("href", "#");
 
 	if(replacement != null) {
@@ -130,6 +203,12 @@ MacroManager.prototype.addUserMacroHtml = function(keyCode, replacement, id, sel
 	}
 	if(keyCode != null) {
 		$a.data("key-code", keyCode);
+	}
+	if(location != null) {
+		$a.data("location", location);
+	}
+	if(code != null) {
+		$a.data("code", code);
 	}
 	if(id != null) {
 		$a.data("id", id);
@@ -146,7 +225,7 @@ MacroManager.prototype.addUserMacroHtml = function(keyCode, replacement, id, sel
 
 MacroManager.prototype.removeFocusFromActiveMacroAnchor = function() {
 	
-	var $activeAnchor = this.$macroContainer.find("a.active");
+	let $activeAnchor = this.$macroContainer.find("a.active");
 
 	if($activeAnchor.data("id") == undefined)
 		$activeAnchor.remove();
@@ -157,6 +236,8 @@ MacroManager.prototype.removeFocusFromActiveMacroAnchor = function() {
 MacroManager.prototype.clearMacroEditForm = function() {
 
 	this.$macroKey.val("");
+	this.$macroLocation.val("");
+	this.$macroCode.val("");
 	this.$macroReplacement.val("");
 	this.$macroId.val("");
 };
@@ -165,20 +246,22 @@ MacroManager.prototype.getMacroAnchorById = function(id) {
 	return this.$macroContainer.find("a").filter(function(index, anchor) { return $(anchor).data("id") == id; })
 };
 
-MacroManager.prototype.getMacroAnchorByKeyCode = function(keyCode) {
-	return this.$macroContainer.find("a").filter(function(index, anchor) { return $(anchor).data("key-code") == keyCode; })
+MacroManager.prototype.getMacroAnchorByKeyCode = function(keyCode, location) {
+	return this.$macroContainer.find("a").filter(function(index, anchor) {
+		return $(anchor).data("key-code") == keyCode && (location == null || $(anchor).data("location") == location);
+	})
 };
 
-MacroManager.prototype.removeMacroHtml = function(keyCode) {
-	this.getMacroAnchorByKeyCode(keyCode).parent().remove();
+MacroManager.prototype.removeMacroHtml = function(keyCode, location) {
+	this.getMacroAnchorByKeyCode(keyCode, location).parent().remove();
 };
 
-MacroManager.prototype.processMacro = function(keyCode) {
+MacroManager.prototype.processMacro = function(keyCode, location) {
 	
 	if(this.client.fancyboxIsVisible())
 		return false;
 	
-	var macro = this.macros[String(keyCode)];
+	let macro = this.getMacro(keyCode, location);
 	if(macro != undefined)
 	{
 		this.client.submitInputCommand(macro);
@@ -188,7 +271,7 @@ MacroManager.prototype.processMacro = function(keyCode) {
 	return false;
 };
 
-MacroManager.prototype.processSaveMacroResponse = function(id, keyCode, replacement, wasSuccessful) {
+MacroManager.prototype.processSaveMacroResponse = function(id, keyCode, location, code, replacement, wasSuccessful) {
 
 	this.enableEditForm();
 	if(wasSuccessful == false) {
@@ -196,29 +279,33 @@ MacroManager.prototype.processSaveMacroResponse = function(id, keyCode, replacem
 		return;
 	}
 	
-	var $userMacroAnchor = this.getMacroAnchorById(this.macroSavingId);
+	let $userMacroAnchor = this.getMacroAnchorById(this.macroSavingId);
 
 	if($userMacroAnchor.length == 0)
 	{
-		this.addUserMacroHtml(keyCode, replacement, userMacroId, true);
+		this.addUserMacroHtml(keyCode, location, code, replacement, userMacroId, true);
 	}
 	else
 	{
-		delete this.macros[$userMacroAnchor.data("key-code")];
-		$userMacroAnchor.text("KEY" + keyCode);
+		delete this.macros[this.getMacroMapKey(keyCode, location)];
+		$userMacroAnchor.text(this.getMacroDisplay(keyCode, location, code));
 		if($userMacroAnchor.hasClass("active"))
 		{
 			this.$macroKey.val(keyCode);
+			this.$macroLocation.val(location);
+			this.$macroCode.val(code);
 			this.$macroReplacement.val(replacement);
 			this.$macroId.val(id);
 		}
 
 		$userMacroAnchor.data("id", id);
 		$userMacroAnchor.data("key-code", keyCode);
+		$userMacroAnchor.data("location", location);
+		$userMacroAnchor.data("code", code);
 		$userMacroAnchor.data("replacement", replacement);
 	}
 
-	this.macros[keyCode] = replacement;
+	this.macros[this.getMacroMapKey(keyCode, location)] = replacement;
 	this.macroSavingId = null;
 };
 
@@ -226,29 +313,33 @@ MacroManager.prototype.loadMacros = function(macroArray)
 {
 	this.$macroContainer.html("");
 	this.macros = {};
-	var self = this;
+	let self = this;
 	
 	macroArray.forEach(function(macro) {
 	
-		self.macros[ macro.keyCode ] = macro.replacement;
-		self.addUserMacroHtml(macro.keyCode, macro.replacement, macro.id);
+		self.macros[ self.getMacroMapKey(macro.keyCode, macro.location) ] = macro.replacement;
+		self.addUserMacroHtml(macro.keyCode, macro.location, macro.code, macro.replacement, macro.id);
 	});
 };
 
-MacroManager.prototype.getMacro = function(keyCode)
+MacroManager.prototype.getMacro = function(keyCode, location)
 {
-	return this.macros[ String(keyCode) ];
+	return this.macros[ this.getMacroMapKey(keyCode, location) ] || this.macros[ this.getMacroMapKey(keyCode, null) ];
 };
 
 MacroManager.prototype.disableEditForm = function()
 {
 	this.$macroKey.attr("disabled", "disabled");
+	this.$macroLocation.attr("disabled", "disabled");
+	this.$macroCode.attr("disabled", "disabled");
 	this.$macroReplacement.attr("disabled", "disabled");
 };
 
 MacroManager.prototype.enableEditForm = function()
 {
 	this.$macroKey.removeAttr("disabled");
+	this.$macroLocation.removeAttr("disabled");
+	this.$macroCode.removeAttr("disabled");
 	this.$macroReplacement.removeAttr("disabled");
 };
 

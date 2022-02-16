@@ -136,10 +136,12 @@ $(document).ready(function() {
 		
 			event.preventDefault();
 			$("#macroKey").val(event.which);
+			$("#macroLocation").val(event.originalEvent.location);
+			$("#macroCode").val(event.originalEvent.code);
 			return;
 		}
 
-		if(client.macroManager.processMacro(event.which)) {
+		if(client.macroManager.processMacro(event.which, event.originalEvent.location, event.originalEvent.code)) {
 			event.preventDefault();
 			return;
 		}
@@ -148,7 +150,10 @@ $(document).ready(function() {
 			return;
 		}
 
-		if(!client.$inputWindow.is(":focus") && event.which != 17 && !keyboardManager.isKeyDown(17)) {
+		if(!client.$inputWindow.is(":focus") &&
+		   !event.metaKey && !keyboardManager.isMetaKeyDown() &&
+		   !event.ctrlKey && !keyboardManager.isCtrlKeyDown()
+		) {
 			client.$inputWindow.focus();
 		}
 
@@ -173,7 +178,7 @@ $(document).ready(function() {
 			socket = new WebSocket(wsProtocol + "kinslayermud.org/wskinslayer", protocol);
 		}
 		else {
-			socket = new WebSocket(wsProtocol + "localhost/wskinslayer", protocol);
+			socket = new WebSocket(wsProtocol + "localhost:4001", protocol);
 		}
 
 		socket.onopen = function()
@@ -237,7 +242,7 @@ $(document).ready(function() {
 		}
 		else if(commandObject.method == "Save User Macro")
 		{
-			client.macroManager.processSaveMacroResponse(commandObject.userMacroId, commandObject.keyCode, commandObject.replacement, commandObject.wasSuccessful);
+			client.macroManager.processSaveMacroResponse(commandObject.userMacroId, commandObject.keyCode, commandObject.location, commandObject.code, commandObject.replacement, commandObject.wasSuccessful);
 		}
 		else if(commandObject.method == "Username")
 		{
@@ -338,7 +343,7 @@ $(document).ready(function() {
 	
 		if(event.which == 38) {//Up
 		
-			if(client.macroManager.getMacro(event.which) != null)
+			if(client.macroManager.getMacro(event.which, event.originalEvent.location) != null)
 				return;
 		
 			if(commandHistoryPosition != 0) {//Can we scroll up any further?
@@ -352,7 +357,7 @@ $(document).ready(function() {
 		}
 		else if(event.which == 40) {//Down
 		
-			if(client.macroManager.getMacro(event.which) != null)
+			if(client.macroManager.getMacro(event.which, event.originalEvent.location) != null)
 				return;
 				
 			if(commandHistoryPosition != commandHistory.length) {//Can we scroll down any further?
