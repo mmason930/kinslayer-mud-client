@@ -245,6 +245,10 @@ a:hover {
 	background-color: #FFF;
 }
 
+#outputWindowBottomSeparator:hover {
+	cursor: row-resize;
+}
+
 #outputWindowBorderTopMargin {
 }
 
@@ -252,10 +256,13 @@ a:hover {
 	height: 80%;
 }
 
+#outputWindowWrapper:not(.split) #outputWindowMargin {
+	height: 100% !important;
+}
+
 #outputWindowMargin {
 	overflow: auto;
 	overflow-x: hidden;
-	height: 100%;
 }
 
 #macros {

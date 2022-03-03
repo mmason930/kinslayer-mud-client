@@ -20,6 +20,8 @@ function GameConsole()
 	this.$outputWindowWrapper = $("#outputWindowWrapper");
 	this.$outputWindowMargin = $("#outputWindowMargin");
 	this.$outputWindowBottomInner = $("#outputWindowBottomInner");
+	this.$outputWindowBottom = $("#outputWindowBottom");
+	this.$outputWindowBottomSeparator = $("#outputWindowBottomSeparator");
 	this.$spacerDiv = null;
 	this.outputLines = [];
 	this.visibleLines = [];
@@ -31,6 +33,12 @@ function GameConsole()
 	this.prevScrollTop = 0;
 	this.prevOffsetHeight = 0;
 	this.disableSplitting = false;
+	this.draggingSeparator = {
+		inProgress: false,
+		startY: null,
+		outputWindowMarginStartHeight: null,
+		outputWindowBottomStartHeight: null
+	};
 	this.colorMap = {
 		 0: [null, null],         //Normal
 		31: ["800000", "ff0000"], //Red
@@ -45,6 +53,48 @@ function GameConsole()
 	this.calculateLineHeight();
 	//this.setupOutputWindow();
 	this.createNewLine();
+
+	let onLowerConsoleScroll = function(e) {
+		e.preventDefault();
+		self.$outputWindowMargin[0].scrollTop += e.deltaY;
+	};
+
+	
+	this.$outputWindowBottom.get(0).addEventListener("mousewheel", onLowerConsoleScroll);
+	this.$outputWindowBottom.get(0).addEventListener("wheel", onLowerConsoleScroll);
+
+	this.$outputWindowBottomSeparator.on("mousedown", function(e) {
+		e.preventDefault();
+		self.draggingSeparator.inProgress = true;
+		self.draggingSeparator.startY = e.clientY;
+		self.draggingSeparator.outputWindowMarginStartHeight = self.$outputWindowMargin.height();
+		self.draggingSeparator.outputWindowBottomStartHeight = self.$outputWindowBottom.height();
+	});
+
+	$(document).on("mouseup", function(e) {
+		e.preventDefault();
+		self.draggingSeparator.inProgress = false;
+		self.draggingSeparator.startY = null;
+		self.draggingSeparator.outputWindowMarginStartHeight = null;
+		self.draggingSeparator.outputWindowBottomStartHeight = null;
+	});
+
+	$(document).on("mousemove", function(e) {
+		if(self.draggingSeparator.inProgress) {
+			e.preventDefault();
+			let mouseOffsetY = e.clientY - self.draggingSeparator.startY;
+			
+			let newMarginHeight = self.draggingSeparator.outputWindowMarginStartHeight + mouseOffsetY;
+			self.$outputWindowMargin.height(newMarginHeight);
+
+			let newBottomHeight = self.draggingSeparator.outputWindowBottomStartHeight - mouseOffsetY;
+			self.$outputWindowBottom.height(newBottomHeight);
+		}
+	})
+
+	this.$outputWindowBottomSeparator.on("mousein", function(e) {
+		e.preventDefault();
+	});
 
 	this.$outputWindowWrapper.on("mousedown", function(e)
 	{
@@ -80,7 +130,6 @@ function GameConsole()
 //		console.log("SCROLL HEIGHT: " + self.$outputWindowMargin.prop("scrollHeight"));
 
 		if(self.$outputWindowWrapper.hasClass("split") && self.$outputWindowMargin.prop("scrollTop") + self.$outputWindowMargin.prop("offsetHeight") + 10 >= self.$outputWindowMargin.prop("scrollHeight")) {
-			console.log("REMOVED SPLIT");
 			self.$outputWindowWrapper.removeClass("split");
 			self.setupDisableSplitting();
 		}
