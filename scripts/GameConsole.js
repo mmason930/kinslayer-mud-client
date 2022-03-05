@@ -59,6 +59,20 @@ function GameConsole()
 		self.$outputWindowMargin[0].scrollTop += e.deltaY;
 	};
 
+	$(window).on('resize', function() {
+		// Resize the upper and lower output window sizes as well.
+		let newTotalHeight = self.$outputWindowWrapper.height();
+		let oldUpperHeight = self.$outputWindowMargin.height();
+		let oldLowerHeight = self.$outputWindowBottom.height();
+		let oldTotalHeight = oldUpperHeight + oldLowerHeight;
+
+		let upperPercentage = oldUpperHeight / oldTotalHeight;
+		let newUpperHeight = newTotalHeight * upperPercentage;
+		let newLowerHeight = newTotalHeight - newUpperHeight;
+
+		self.$outputWindowMargin.height(newUpperHeight);
+		self.$outputWindowBottom.height(newLowerHeight);
+	});
 	
 	this.$outputWindowBottom.get(0).addEventListener("mousewheel", onLowerConsoleScroll);
 	this.$outputWindowBottom.get(0).addEventListener("wheel", onLowerConsoleScroll);
